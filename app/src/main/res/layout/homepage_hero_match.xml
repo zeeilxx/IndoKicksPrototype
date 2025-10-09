@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/btnSeeDetails"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    app:cardCornerRadius="16dp"
+    app:cardUseCompatPadding="true"
+    app:strokeColor="@color/indokicks_primary"
+    app:strokeWidth="1dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvLeague"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Liga 1 - Hero Match"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:textColor="@color/indokicks_text_dark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <TextView
+            android:id="@+id/tvStatusTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Kickoff 19:30"
+            android:textColor="@color/indokicks_primary"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/tvLeague"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="4dp"/>
+
+        <ImageView
+            android:id="@+id/ivHomeLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintTop_toBottomOf="@id/tvStatusTime"
+            app:layout_constraintStart_toStartOf="parent"
+            android:contentDescription="@string/app_name"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tvHomeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Home FC"
+            android:textStyle="bold"
+            android:textColor="@color/indokicks_text_dark"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/ivHomeLogo"
+            app:layout_constraintTop_toTopOf="@id/ivHomeLogo"
+            app:layout_constraintEnd_toStartOf="@id/ivAwayLogo"/>
+
+        <ImageView
+            android:id="@+id/ivAwayLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@mipmap/ic_launcher"
+            app:layout_constraintTop_toBottomOf="@id/tvStatusTime"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:contentDescription="@string/app_name"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tvAwayName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Away FC"
+            android:textStyle="bold"
+            android:gravity="end"
+            android:textColor="@color/indokicks_text_dark"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toStartOf="@id/ivAwayLogo"
+            app:layout_constraintTop_toTopOf="@id/ivAwayLogo"
+            app:layout_constraintStart_toEndOf="@id/ivHomeLogo"/>
+
+        <TextView
+            android:id="@+id/tvCTA"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="See Details"
+            android:textStyle="bold"
+            android:textColor="@color/indokicks_primary"
+            app:layout_constraintTop_toBottomOf="@id/ivHomeLogo"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginTop="12dp"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

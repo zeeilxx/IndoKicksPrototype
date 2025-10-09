@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:startDestination="@id/nav_home">
+
+    <fragment
+        android:id="@+id/nav_home"
+        android:name="com.example.indokicksprototype.ui.homepage.HomeFragment"
+        android:label="Home" />
+
+    <fragment
+        android:id="@+id/nav_matches"
+        android:name="com.example.indokicksprototype.ui.MatchesFragment"
+        android:label="Matches" />
+
+    <fragment
+        android:id="@+id/nav_standings"
+        android:name="com.example.indokicksprototype.ui.StandingsFragment"
+        android:label="Standings" />
+
+    <fragment
+        android:id="@+id/nav_clubs"
+        android:name="com.example.indokicksprototype.ui.ClubsFragment"
+        android:label="Clubs" />
+
+    <!-- Opsional: Settings jika ingin sebagai Fragment juga -->
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.indokicksprototype.ui.SettingsFragment"
+        android:label="Settings" />
+</navigation>

@@ -1,0 +1,31 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Theme.IndoKicks" parent="Theme.Material3.DayNight">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+        <!-- skema warna inti -->
+        <item name="colorPrimary">@color/indokicks_primary</item>
+<!--        <item name="colorBackground">@color/indokicks_background</item>-->
+        <item name="colorSurface">@color/indokicks_background</item>
+        <item name="android:windowBackground">@color/indokicks_background</item>
+
+        <!-- default text pada konten -->
+        <item name="android:textColor">@color/indokicks_text_dark</item>
+
+        <!-- style toolbar -->
+        <item name="toolbarStyle">@style/Widget.IndoKicks.Toolbar</item>
+    </style>
+
+    <style name="Widget.IndoKicks.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/indokicks_primary</item>
+        <item name="titleTextColor">@color/white</item>
+        <item name="subtitleTextColor">@color/white</item>
+    </style>
+
+    <style name="Theme.IndoKicks.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/indokicks_splash</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/logo</item> <!-- ikon sederhana -->
+        <item name="windowSplashScreenAnimationDuration">500</item>
+        <item name="postSplashScreenTheme">@style/Theme.IndoKicks</item>
+    </style>
+</resources>

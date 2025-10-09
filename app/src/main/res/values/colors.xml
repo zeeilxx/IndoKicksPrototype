@@ -1,0 +1,11 @@
+<resources>
+    <!-- Brand -->
+    <color name="indokicks_primary">#D10C20</color>   <!-- merah -->
+    <color name="indokicks_background">#FFFFFF</color><!-- PUTIH untuk page -->
+    <color name="indokicks_text_dark">#0B0B0F</color><!-- HITAM untuk teks konten -->
+    <color name="indokicks_accent">#00C2FF</color>
+    <color name="indokicks_splash">#D41A18</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+</resources>

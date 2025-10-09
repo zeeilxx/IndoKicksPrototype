@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@android:drawable/ic_menu_view"
+        android:title="Home" />
+    <item
+        android:id="@+id/nav_matches"
+        android:icon="@android:drawable/ic_menu_today"
+        android:title="Matches" />
+    <item
+        android:id="@+id/nav_standings"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="Standings" />
+    <item
+        android:id="@+id/nav_clubs"
+        android:icon="@android:drawable/ic_menu_agenda"
+        android:title="Clubs" />
+</menu>
