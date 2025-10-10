@@ -41,7 +41,7 @@
             android:layout_gravity="bottom"
             android:background="@color/indokicks_primary"
             app:itemIconTint="@color/bnv_item_color"
-            app:itemTextColor="@color/bnv_item_color"
+            app:itemTextColor="@color/white"
             app:menu="@menu/bottom_nav_menu" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
