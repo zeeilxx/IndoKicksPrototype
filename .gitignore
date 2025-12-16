@@ -4,6 +4,8 @@
 gradle/daemon/
 gradle/notifications/
 gradle/workers/
+/gradle/native/
+/gradle/android/
 app.zip
 /gradle/wrapper/dists/
 /local.properties
