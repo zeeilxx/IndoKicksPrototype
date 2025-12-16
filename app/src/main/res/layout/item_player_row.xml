@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingVertical="6dp">
+
+    <ImageView
+        android:id="@+id/ivPlayerPhoto"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="8dp"
+        android:contentDescription="@string/app_name" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvPlayerName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Nama Pemain"
+            android:textSize="14sp"
+            android:textColor="@color/indokicks_text_dark" />
+
+        <TextView
+            android:id="@+id/tvPlayerInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="#10 MF"
+            android:textSize="12sp"
+            android:textColor="@color/indokicks_text_dark" />
+
+        <TextView
+            android:id="@+id/tvPlayerSubInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="24 yrs • Indonesia"
+            android:textSize="11sp"
+            android:textColor="@color/indokicks_text_dark" />
+    </LinearLayout>
+
+</LinearLayout>

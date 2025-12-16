@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/indokicks_background"
+    android:padding="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="100dp">
+
+        <!-- CARD HEADER: logo + nama tim + skor -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="3dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvStatusDetail"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textColor="@color/indokicks_accent"
+                    android:layout_gravity="center_horizontal"
+                    android:text="NS" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingTop="8dp">
+
+                    <ImageView
+                        android:id="@+id/ivHomeLogoDetail"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_marginEnd="8dp"
+                        android:contentDescription="@string/app_name" />
+
+                    <TextView
+                        android:id="@+id/tvHomeTeamDetail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textSize="18sp"
+                        android:textColor="@color/indokicks_text_dark" />
+
+                    <TextView
+                        android:id="@+id/tvScoreDetail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 - 0"
+                        android:textSize="22sp"
+                        android:layout_marginHorizontal="8dp"
+                        android:textColor="@color/indokicks_text_dark" />
+
+                    <TextView
+                        android:id="@+id/tvAwayTeamDetail"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="end"
+                        android:textSize="18sp"
+                        android:textColor="@color/indokicks_text_dark" />
+
+                    <ImageView
+                        android:id="@+id/ivAwayLogoDetail"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
+                        android:layout_marginStart="8dp"
+                        android:contentDescription="@string/app_name" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvDateTimeDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:textSize="13sp"
+                    android:gravity="center_horizontal"
+                    android:textColor="@color/indokicks_text_dark" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD INFO PERTANDINGAN -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Info Pertandingan"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvLeagueRoundDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvVenueDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvRefereeDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="4dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD SUSUNAN PEMAIN -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="2dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Susunan Pemain"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <!-- HOME LINEUPS -->
+                <TextView
+                    android:id="@+id/tvHomeLineupTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Home - Starting XI"
+                    android:paddingTop="8dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvHomeLineupPlayers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvHomeSubsTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Home - Substitutes"
+                    android:paddingTop="8dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvHomeSubsPlayers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <!-- GARIS PEMISAH -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@android:color/darker_gray" />
+
+                <!-- AWAY LINEUPS -->
+                <TextView
+                    android:id="@+id/tvAwayLineupTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Away - Starting XI"
+                    android:paddingTop="10dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvAwayLineupPlayers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvAwaySubsTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Away - Substitutes"
+                    android:paddingTop="8dp"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+                <TextView
+                    android:id="@+id/tvAwaySubsPlayers"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:textSize="13sp"
+                    android:textColor="@color/indokicks_text_dark" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- LOADING + ERROR -->
+        <ProgressBar
+            android:id="@+id/progressDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center_horizontal" />
+
+        <TextView
+            android:id="@+id/tvErrorDetail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:textSize="13sp"
+            android:textColor="@color/indokicks_text_dark"
+            android:gravity="center_horizontal"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

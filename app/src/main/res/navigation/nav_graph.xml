@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     app:startDestination="@id/nav_home">
 
     <fragment
@@ -28,4 +29,20 @@
         android:id="@+id/nav_settings"
         android:name="com.example.indokicksprototype.ui.SettingsFragment"
         android:label="Settings" />
+
+    <fragment
+        android:id="@+id/nav_match_detail"
+        android:name="com.example.indokicksprototype.ui.MatchDetailFragment"
+        android:label="Match Detail">
+        <argument
+            android:name="fixtureId"
+            app:argType="integer" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_club_detail"
+        android:name="com.example.indokicksprototype.ui.ClubDetailFragment"
+        android:label="Club Detail"
+        tools:layout="@layout/fragment_club_detail" />
+
 </navigation>

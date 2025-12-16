@@ -1,6 +1,13 @@
 *.iml
 .gradle
+/gradle/caches/
+gradle/daemon/
+gradle/notifications/
+gradle/workers/
+app.zip
+/gradle/wrapper/dists/
 /local.properties
+/.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
