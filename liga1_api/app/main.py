@@ -8,6 +8,7 @@ app.include_router(standings.router, prefix="", tags=["standings"])
 app.include_router(teams.router, prefix="", tags=["teams"])
 app.include_router(players.router, prefix="", tags=["players"])
 
+
 @app.get("/health")
 def health():
     return {"status": "ok"}

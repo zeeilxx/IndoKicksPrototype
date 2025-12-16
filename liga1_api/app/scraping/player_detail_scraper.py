@@ -8,6 +8,8 @@ from bs4 import BeautifulSoup
 
 from app.utils.cache import cache_get, cache_set
 from app.utils.http_client import fetch_html
+from app.scraping.player_pic_scraper import extract_player_photo_url
+
 
 SITE_BASE = "https://www.ligaindonesiabaru.com"
 PLAYER_SINGLE_BASE = f"{SITE_BASE}/clubs/singleplayer"
@@ -232,7 +234,6 @@ def dom_value_after_label(soup: BeautifulSoup, label: str) -> Optional[str]:
 
 
 def parse_basic_profile_from_dom(soup: BeautifulSoup) -> Dict[str, Any]:
-    # ambil dari DOM (bukan full_text)
     club_raw = dom_value_after_label(soup, "Klub")
     pos_raw = dom_value_after_label(soup, "Posisi")
     age_raw = dom_value_after_label(soup, "Usia")
@@ -248,15 +249,12 @@ def parse_basic_profile_from_dom(soup: BeautifulSoup) -> Dict[str, Any]:
     position = norm(pos_raw).upper() if pos_raw else None
     nationality = norm(nat_raw).title() if nat_raw else None
 
-    # nama: tetap bisa pakai h1/h2
     full_name = None
     h = soup.find(["h1", "h2"])
     if h:
         full_name = norm(h.get_text(" ", strip=True))
 
-    # nomor punggung: optional
     number = None
-    # cari "# 5" atau "No 5"
     t = soup.get_text(" ", strip=True)
     m = re.search(r"(#|No\.?)\s*(\d{1,3})\b", t, re.IGNORECASE)
     if m:
@@ -269,7 +267,9 @@ def parse_basic_profile_from_dom(soup: BeautifulSoup) -> Dict[str, Any]:
         "nationality": nationality,
         "number": number,
         "full_name": full_name,
+        "photo": None,  # will be filled after we know final_url
     }
+
 
 
 def parse_key_stats(full_text: str) -> Dict[str, Any]:
@@ -375,6 +375,8 @@ async def scrape_player_detail(
     full_text = soup.get_text("\n", strip=True)
 
     profile = parse_basic_profile_from_dom(soup)
+    base_for_assets = final_url or used_url or SITE_BASE
+    profile["photo"] = extract_player_photo_url(soup, base_url=base_for_assets)
     key_stats = parse_key_stats(full_text)
     club_history = parse_riwayat_klub(soup)
     match_history = parse_riwayat_pemain(soup, limit=60)
