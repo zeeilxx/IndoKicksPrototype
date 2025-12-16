@@ -40,7 +40,7 @@ async def players_detail(
             "name": (prof.get("full_name") or detail["player_slug"].replace("_", " ").title()),
             "age": prof.get("age"),
             "nationality": prof.get("nationality"),
-            "photo": None,
+            "photo": prof.get("photo"),
         },
         "statistics": [
             {

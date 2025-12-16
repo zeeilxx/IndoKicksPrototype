@@ -9,6 +9,8 @@ from app.utils.cache import cache_get, cache_set
 from app.utils.http_client import fetch_html
 from app.scraping.teams_detail_scraper import scrape_team_detail
 from app.scraping.team_squad_scraper import scrape_team_squad
+from app.scraping.club_logo_scraper import resolve_club_logo_url
+
 
 router = APIRouter(tags=["teams"])
 
@@ -86,6 +88,13 @@ async def team_detail(team_slug: str, league: int = 274, season: int = Query(...
     meta = detail["meta"]
     slug = team_slug.upper()
 
+    # ✅ Get club page URL from your team detail scraper source info
+    src = detail.get("_source", {}) or {}
+    club_page_url = src.get("final_url") or src.get("club_url")  # absolute URL expected
+
+    # ✅ Resolve logo from the club page (uses your safe filters + caching)
+    logo_url = await resolve_club_logo_url(club_page_url or "")
+
     return {
         "get": "teams",
         "parameters": {"league": league, "season": season, "id": slug},
@@ -93,15 +102,16 @@ async def team_detail(team_slug: str, league: int = 274, season: int = Query(...
         "response": [{
             "team": {
                 "id": stable_id(slug),
-                "name": meta["team_name"],
+                "name": meta.get("team_name") or slug,
                 "slug": slug,
                 "country": "Indonesia",
-                "founded": meta["founded"],
+                "founded": meta.get("founded"),
                 "national": False,
-                "logo": None,
+                "logo": logo_url,  
             },
-            "coach": {"name": meta["coach"]},
-            "venue": {"name": meta["stadium"], "city": meta["location"]},
+            "coach": {"name": meta.get("coach")},
+            "venue": {"name": meta.get("stadium"), "city": meta.get("location")},
             "players": players,
+            "_source": {"club_url": club_page_url},
         }]
     }

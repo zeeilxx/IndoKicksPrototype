@@ -1,23 +1,28 @@
 import zlib
 from datetime import datetime
 from typing import Dict, Any, List, Optional
+from urllib.parse import urljoin
 
 import httpx
 from bs4 import BeautifulSoup
 
 from app.utils.cache import cache_get, cache_set
+from app.scraping.club_logo_scraper import resolve_club_logo_url
 
 SITE_BASE = "https://www.ligaindonesiabaru.com"
 TABLE_URL = f"{SITE_BASE}/table/index"
 
 WDL = {"W", "D", "L"}
 
+
 def stable_int32_id(s: str) -> int:
     u = zlib.crc32(s.encode("utf-8")) & 0xFFFFFFFF
     return u - 0x100000000 if u >= 0x80000000 else u
 
+
 def norm(s: str) -> str:
     return " ".join((s or "").split()).strip()
+
 
 async def fetch_table_html(competition_code: str, ttl_seconds: int = 600) -> Optional[str]:
     key = f"table_html:{competition_code}"
@@ -40,13 +45,12 @@ async def fetch_table_html(competition_code: str, ttl_seconds: int = 600) -> Opt
     cache_set("standings_html", key, r.text, ttl_seconds=ttl_seconds)
     return r.text
 
+
 def _parse_table_rows(soup: BeautifulSoup) -> List[Dict[str, Any]]:
     """
     Parse from actual table rows (fast).
-    Expected columns on page: Pos, Club, Main, Menang, Seri, Kalah, GM, GK, SG, Poin, Form
-    We'll be defensive:
-      - read all tables, find rows that look numeric
-      - extract rank and numeric stats
+    Expected columns: Pos, Club, Main, Menang, Seri, Kalah, GM, GK, SG, Poin, Form
+    Adds: club_href (relative href to club page) if found.
     """
     rows_out: List[Dict[str, Any]] = []
 
@@ -63,31 +67,32 @@ def _parse_table_rows(soup: BeautifulSoup) -> List[Dict[str, Any]]:
                 continue
             rank = int(cols[0])
 
+            # club text
             club = cols[1]
             if not club or club.lower() in {"club", "klub"}:
                 continue
 
-            # numeric stats indexes (common layout)
-            # 0 rank, 1 club, 2 played, 3 win, 4 draw, 5 lose, 6 gf, 7 ga, 8 gd, 9 pts, 10 form?
-            # Some pages may include extra columns; we try to parse by scanning ints after club.
-            nums = []
+            # try capture href from the 2nd cell (club cell)
+            club_href = None
+            if len(tds) >= 2:
+                a = tds[1].find("a", href=True)
+                if a and a["href"]:
+                    club_href = norm(a["href"])
+
+            # numeric stats
+            nums: List[int] = []
             for c in cols[2:]:
-                # stop when form begins (W/D/L sequence)
                 parts = c.split()
-                if all(p in WDL for p in parts) and 3 <= len(parts) <= 10:
+                if parts and all(p in WDL for p in parts) and 3 <= len(parts) <= 10:
                     break
                 if c.lstrip("-").isdigit():
                     nums.append(int(c))
-                else:
-                    # sometimes "13" is clean; if not numeric we just ignore
-                    pass
 
-            # need at least 8 numbers: played, win, draw, lose, gf, ga, gd, pts
             if len(nums) < 8:
                 continue
             played, win, draw, lose, gf, ga, gd, pts = nums[:8]
 
-            # form (optional) - take last column if it looks like WDL sequence
+            # form (optional)
             form = None
             last = cols[-1].split()
             if last and all(x in WDL for x in last):
@@ -96,6 +101,7 @@ def _parse_table_rows(soup: BeautifulSoup) -> List[Dict[str, Any]]:
             rows_out.append({
                 "rank": rank,
                 "club": club,
+                "club_href": club_href,  # ✅ new
                 "played": played,
                 "win": win,
                 "draw": draw,
@@ -113,11 +119,13 @@ def _parse_table_rows(soup: BeautifulSoup) -> List[Dict[str, Any]]:
         by_rank[r["rank"]] = r
     return [by_rank[k] for k in sorted(by_rank.keys())]
 
+
 def _build_api_response(
     league_id: int,
     season: int,
     competition_code: str,
     rows: List[Dict[str, Any]],
+    logo_map: Dict[str, Optional[str]],
     league_name: str = "Liga 1",
     country: str = "Indonesia"
 ) -> Dict[str, Any]:
@@ -127,9 +135,14 @@ def _build_api_response(
     for r in rows:
         team_id = stable_int32_id(f"TEAM:{r['club'].upper()}")
 
+        logo = None
+        href = r.get("club_href")
+        if href:
+            logo = logo_map.get(href)
+
         standings_items.append({
             "rank": r["rank"],
-            "team": {"id": team_id, "name": r["club"], "logo": None},
+            "team": {"id": team_id, "name": r["club"], "logo": logo},
             "points": r["pts"],
             "goalsDiff": r["gd"],
             "group": league_name,
@@ -167,6 +180,7 @@ def _build_api_response(
             }
         }]
     }
+
 
 async def scrape_standings(
     competition_code: str,
@@ -208,11 +222,22 @@ async def scrape_standings(
         cache_set("standings_json", key, out, ttl_seconds=120)
         return out
 
+    # ✅ Resolve club logos (based on club href from table)
+    logo_map: Dict[str, Optional[str]] = {}
+    for r in rows:
+        href = r.get("club_href")
+        if not href:
+            continue
+        if href in logo_map:
+            continue
+        logo_map[href] = await resolve_club_logo_url(href)
+
     out = _build_api_response(
         league_id=league_id,
         season=season,
         competition_code=competition_code,
-        rows=rows
+        rows=rows,
+        logo_map=logo_map
     )
     cache_set("standings_json", key, out, ttl_seconds=ttl_seconds)
     return out
