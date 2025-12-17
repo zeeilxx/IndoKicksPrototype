@@ -10,14 +10,17 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.indokicksprototype.R;
-import com.example.indokicksprototype.model.PlayerSimple;
+import com.example.indokicksprototype.model.PlayerDetail;
 import com.example.indokicksprototype.network.ApiClient;
 import com.example.indokicksprototype.network.PlayersApiResponse;
+import com.example.indokicksprototype.network.SeasonApi;
 import com.example.indokicksprototype.network.TeamsApiResponse;
 
 import java.util.ArrayList;
@@ -61,7 +64,8 @@ public class ClubDetailFragment extends Fragment {
         RecyclerView rvPlayers = v.findViewById(R.id.rvPlayers);
 
         rvPlayers.setLayoutManager(new LinearLayoutManager(requireContext()));
-        playersAdapter = new PlayersAdapter();
+
+        playersAdapter = new PlayersAdapter(playerDetail -> openPlayerDetail(playerDetail));
         rvPlayers.setAdapter(playersAdapter);
 
         Bundle args = getArguments();
@@ -77,7 +81,15 @@ public class ClubDetailFragment extends Fragment {
         }
 
         loadClubDetail();
-        loadPlayers();
+        loadPlayersHybrid();
+    }
+
+    private void openPlayerDetail(PlayerDetail detail) {
+        Bundle b = new Bundle();
+        b.putParcelable(PlayerDetailFragment.ARG_PLAYER_DETAIL, detail);
+
+        NavController navController = NavHostFragment.findNavController(this);
+        navController.navigate(R.id.nav_player_detail, b);
     }
 
     private void loadClubDetail() {
@@ -99,14 +111,8 @@ public class ClubDetailFragment extends Fragment {
                         .into(ivLogo);
 
                 tvName.setText(r.team.name);
-
-                if (r.team.country != null) {
-                    tvCountry.setText(r.team.country);
-                }
-
-                if (r.team.founded > 0) {
-                    tvFounded.setText("Founded: " + r.team.founded);
-                }
+                if (r.team.country != null) tvCountry.setText(r.team.country);
+                if (r.team.founded > 0) tvFounded.setText("Founded: " + r.team.founded);
 
                 if (r.venue != null) {
                     String s = "Stadium: " + r.venue.name;
@@ -121,17 +127,20 @@ public class ClubDetailFragment extends Fragment {
         });
     }
 
-    private void loadPlayers() {
+    private void loadPlayersHybrid() {
         showPlayersLoading(true);
         tvPlayersError.setVisibility(View.GONE);
 
+        int seasonForExternal = SeasonApi.logoSeasonForExternal(season);
+
         Call<PlayersApiResponse> call = ApiClient.getService()
-                .getPlayers(teamId, season, 1);
+                .getPlayers(teamId, seasonForExternal, 1);
 
         call.enqueue(new Callback<PlayersApiResponse>() {
             @Override
             public void onResponse(Call<PlayersApiResponse> call, Response<PlayersApiResponse> response) {
                 showPlayersLoading(false);
+
                 if (!response.isSuccessful() || response.body() == null ||
                         response.body().getResponse() == null) {
                     showPlayersError("Gagal memuat squad.");
@@ -144,27 +153,63 @@ public class ClubDetailFragment extends Fragment {
                     return;
                 }
 
-                List<PlayerSimple> players = new ArrayList<>();
+                List<PlayerDetail> players = new ArrayList<>();
+
                 for (PlayersApiResponse.PlayerItem item : list) {
-                    if (item.player == null) continue;
+                    if (item == null || item.player == null) continue;
 
                     String position = null;
                     Integer number = null;
-                    if (item.statistics != null && !item.statistics.isEmpty() &&
-                            item.statistics.get(0).games != null) {
-                        position = item.statistics.get(0).games.position;
-                        number = item.statistics.get(0).games.number;
+                    Integer appearences = null;
+                    Integer lineups = null;
+                    Integer minutes = null;
+                    String rating = null;
+
+                    if (item.statistics != null && !item.statistics.isEmpty()) {
+                        PlayersApiResponse.Statistics s0 = item.statistics.get(0);
+                        if (s0 != null && s0.games != null) {
+                            position = s0.games.position;
+                            number = s0.games.number;
+                            appearences = s0.games.appearences;
+                            lineups = s0.games.lineups;
+                            minutes = s0.games.minutes;
+                            rating = s0.games.rating;
+                        }
                     }
 
-                    PlayerSimple p = new PlayerSimple(
+                    // birth/height/weight: tergantung model PlayersApiResponse kamu
+                    String birthDate = null;
+                    String birthPlace = null;
+                    String height = null;
+                    String weight = null;
+
+                    // kalau field ini ada di model kamu, ini akan kepakai.
+                    // kalau belum ada, silakan tambahkan field tsb di PlayersApiResponse (aku bisa bantu).
+                    if (item.player.birth != null) {
+                        birthDate = item.player.birth.date;
+                        birthPlace = item.player.birth.place;
+                    }
+                    height = item.player.height;
+                    weight = item.player.weight;
+
+                    PlayerDetail p = new PlayerDetail(
                             item.player.id,
                             item.player.name,
-                            position,
-                            number,
+                            item.player.photo,
                             item.player.age,
                             item.player.nationality,
-                            item.player.photo
+                            position,
+                            number,
+                            appearences,
+                            lineups,
+                            minutes,
+                            rating,
+                            birthDate,
+                            birthPlace,
+                            height,
+                            weight
                     );
+
                     players.add(p);
                 }
 

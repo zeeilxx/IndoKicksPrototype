@@ -8,7 +8,6 @@ public class Fixture {
     private Team away;
     private int leagueId;
 
-    // skor (boleh null kalau belum main)
     private Integer goalsHome;
     private Integer goalsAway;
 

@@ -11,18 +11,27 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.indokicksprototype.R;
-import com.example.indokicksprototype.model.PlayerSimple;
+import com.example.indokicksprototype.model.PlayerDetail;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.VH> {
 
-    private final List<PlayerSimple> items = new ArrayList<>();
+    public interface OnPlayerClick {
+        void onClick(PlayerDetail player);
+    }
 
-    public void setItems(List<PlayerSimple> players) {
+    private final List<PlayerDetail> items = new ArrayList<>();
+    private final OnPlayerClick listener;
+
+    public PlayersAdapter(OnPlayerClick listener) {
+        this.listener = listener;
+    }
+
+    public void setItems(List<PlayerDetail> newItems) {
         items.clear();
-        if (players != null) items.addAll(players);
+        if (newItems != null) items.addAll(newItems);
         notifyDataSetChanged();
     }
 
@@ -30,32 +39,28 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.VH> {
     @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_player_row, parent, false);
+                .inflate(R.layout.item_player_simple, parent, false);
         return new VH(v);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH h, int position) {
-        PlayerSimple p = items.get(position);
-        h.tvName.setText(p.getName());
+        PlayerDetail p = items.get(position);
 
-        String extra = "";
-        if (p.getNumber() != null) extra += "#" + p.getNumber() + "  ";
-        if (p.getPosition() != null) extra += p.getPosition();
-        h.tvInfo.setText(extra.trim());
+        h.tvName.setText(p.getName() != null ? p.getName() : "-");
 
-        String sub = "";
-        if (p.getAge() != null) sub += p.getAge() + " yrs";
-        if (p.getNationality() != null) {
-            if (!sub.isEmpty()) sub += " • ";
-            sub += p.getNationality();
-        }
-        h.tvSubInfo.setText(sub);
+        String meta = "";
+        if (p.getPosition() != null) meta += p.getPosition();
+        if (p.getNumber() != null) meta += (meta.isEmpty() ? "" : " • ") + "#" + p.getNumber();
+        if (p.getAge() != null) meta += (meta.isEmpty() ? "" : " • ") + "Age " + p.getAge();
+        h.tvMeta.setText(meta.isEmpty() ? "-" : meta);
 
         Glide.with(h.itemView.getContext())
                 .load(p.getPhoto())
                 .placeholder(R.mipmap.ic_launcher)
                 .into(h.ivPhoto);
+
+        h.itemView.setOnClickListener(v -> listener.onClick(p));
     }
 
     @Override
@@ -65,14 +70,13 @@ public class PlayersAdapter extends RecyclerView.Adapter<PlayersAdapter.VH> {
 
     static class VH extends RecyclerView.ViewHolder {
         ImageView ivPhoto;
-        TextView tvName, tvInfo, tvSubInfo;
+        TextView tvName, tvMeta;
 
         VH(@NonNull View itemView) {
             super(itemView);
             ivPhoto = itemView.findViewById(R.id.ivPlayerPhoto);
             tvName = itemView.findViewById(R.id.tvPlayerName);
-            tvInfo = itemView.findViewById(R.id.tvPlayerInfo);
-            tvSubInfo = itemView.findViewById(R.id.tvPlayerSubInfo);
+            tvMeta = itemView.findViewById(R.id.tvPlayerMeta);
         }
     }
 }

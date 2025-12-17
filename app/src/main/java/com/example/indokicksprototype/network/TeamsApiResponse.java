@@ -23,6 +23,7 @@ public class TeamsApiResponse {
         public int founded;
         public String logo;
         public boolean national;
+        public String slug;
     }
 
     public static class Venue {

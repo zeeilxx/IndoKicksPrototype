@@ -11,23 +11,97 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <include layout="@layout/homepage_hero_match"/>
 
-        <TextView
-            android:id="@+id/labelNews"
+        <!-- ================= STANDINGS PREVIEW ================= -->
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingTop="12dp"
+            android:paddingBottom="6dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Standings (Top 5)"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:textColor="@color/indokicks_text_dark" />
+
+            <Spinner
+                android:id="@+id/spinnerSeasonHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressStandingsHome"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Latest News"
-            android:textStyle="bold"
-            android:textSize="18sp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvErrorStandingsHome"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
             android:textColor="@color/indokicks_text_dark"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="8dp"/>
+            android:visibility="gone"
+            android:paddingTop="4dp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvStandingsPreview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:paddingBottom="8dp" />
+
+        <!-- ================= NEWS ================= -->
+
+        <TextView
+            android:id="@+id/tvNewsLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="News"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:textColor="@color/indokicks_text_dark"
+            android:paddingTop="12dp" />
+
+        <ProgressBar
+            android:id="@+id/progressNews"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone"
+            android:paddingTop="6dp" />
+
+        <TextView
+            android:id="@+id/tvNewsError"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="13sp"
+            android:textColor="@color/indokicks_text_dark"
+            android:visibility="gone"
+            android:paddingTop="4dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvNews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:nestedScrollingEnabled="false"/>
+            android:clipToPadding="false"
+            android:nestedScrollingEnabled="false"
+            android:paddingBottom="12dp" />
+
+        <!-- Spacer bottom -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="80dp" />
+
     </LinearLayout>
 </ScrollView>

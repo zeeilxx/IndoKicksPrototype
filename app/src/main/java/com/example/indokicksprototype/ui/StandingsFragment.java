@@ -19,6 +19,7 @@ import com.example.indokicksprototype.R;
 import com.example.indokicksprototype.model.StandingRow;
 import com.example.indokicksprototype.model.Team;
 import com.example.indokicksprototype.network.ApiClient;
+import com.example.indokicksprototype.network.ApiClientBackend;
 import com.example.indokicksprototype.network.StandingsApiResponse;
 
 import java.util.ArrayList;
@@ -32,9 +33,9 @@ public class StandingsFragment extends Fragment {
 
     private static final int LIGA_1_ID = 274;
 
+    private Spinner spinnerSeason;
     private ProgressBar progressBar;
     private TextView tvError;
-    private Spinner spinnerSeason;
     private StandingsAdapter adapter;
 
     @Nullable
@@ -47,11 +48,11 @@ public class StandingsFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        spinnerSeason = view.findViewById(R.id.spinnerSeasonStandings); // pastikan id ini ada di XML
         progressBar = view.findViewById(R.id.progressStandings);
         tvError = view.findViewById(R.id.tvErrorStandings);
-        spinnerSeason = view.findViewById(R.id.spinnerSeason);
-        RecyclerView rv = view.findViewById(R.id.rvStandings);
 
+        RecyclerView rv = view.findViewById(R.id.rvStandings);
         rv.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new StandingsAdapter();
         rv.setAdapter(adapter);
@@ -60,7 +61,7 @@ public class StandingsFragment extends Fragment {
     }
 
     private void setupSeasonFilter() {
-        Integer[] seasons = {2021, 2022, 2023};
+        Integer[] seasons = new Integer[]{2021, 2022, 2023, 2024, 2025};
 
         ArrayAdapter<Integer> seasonAdapter = new ArrayAdapter<>(
                 requireContext(),
@@ -69,86 +70,53 @@ public class StandingsFragment extends Fragment {
         );
         seasonAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSeason.setAdapter(seasonAdapter);
-
-        // default ke 2023 (index 2)
-        spinnerSeason.setSelection(2);
+        spinnerSeason.setSelection(seasons.length - 1);
 
         spinnerSeason.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            boolean first = true;
-
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 Integer season = (Integer) spinnerSeason.getSelectedItem();
                 if (season == null) return;
 
-                // biar tidak 2x call aneh saat pertama kali
-                if (first) {
-                    first = false;
+                if (season <= 2023) {
+                    loadStandingsExternal(season);
+                } else {
+                    loadStandingsBackend(season);
                 }
-                loadStandings(season);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) { }
         });
+
+        Integer initial = (Integer) spinnerSeason.getSelectedItem();
+        if (initial != null) {
+            if (initial <= 2023) loadStandingsExternal(initial);
+            else loadStandingsBackend(initial);
+        }
     }
 
-    private void loadStandings(int season) {
+    private void loadStandingsBackend(int season) {
         showLoading(true);
         tvError.setVisibility(View.GONE);
-        adapter.setItems(new ArrayList<>());
 
-        Call<StandingsApiResponse> call = ApiClient.getService()
-                .getStandings(LIGA_1_ID, season);
-
+        Call<StandingsApiResponse> call = ApiClientBackend.getService().getStandings(LIGA_1_ID, season);
         call.enqueue(new Callback<StandingsApiResponse>() {
             @Override
             public void onResponse(Call<StandingsApiResponse> call, Response<StandingsApiResponse> response) {
                 showLoading(false);
+
                 if (!response.isSuccessful() || response.body() == null ||
-                        response.body().getResponse() == null ||
-                        response.body().getResponse().isEmpty()) {
-                    showError("Gagal memuat klasemen (" + response.code() + ")");
+                        response.body().getResponse() == null || response.body().getResponse().isEmpty()) {
+                    showError("Gagal memuat standings (backend).");
+                    adapter.setItems(null);
                     return;
                 }
 
-                StandingsApiResponse.ResponseItem item = response.body().getResponse().get(0);
-                if (item.league == null || item.league.standings == null ||
-                        item.league.standings.isEmpty()) {
-                    showError("Data klasemen tidak tersedia.");
-                    return;
-                }
-
-                List<StandingsApiResponse.Standing> standingList = item.league.standings.get(0);
-                List<StandingRow> rows = new ArrayList<>();
-
-                for (StandingsApiResponse.Standing s : standingList) {
-                    if (s.team == null || s.all == null || s.all.goals == null) continue;
-
-                    Team team = new Team(
-                            s.team.id,
-                            s.team.name,
-                            s.team.logo
-                    );
-
-                    StandingRow row = new StandingRow(
-                            s.rank,
-                            team,
-                            s.all.played,
-                            s.all.win,
-                            s.all.draw,
-                            s.all.lose,
-                            s.all.goals.goalsFor,
-                            s.all.goals.goalsAgainst,
-                            s.goalsDiff,
-                            s.points,
-                            s.form
-                    );
-                    rows.add(row);
-                }
-
+                List<StandingRow> rows = mapStandings(response.body());
                 if (rows.isEmpty()) {
-                    showError("Data klasemen tidak tersedia.");
+                    showError("Data klasemen kosong.");
+                    adapter.setItems(null);
                 } else {
                     adapter.setItems(rows);
                 }
@@ -157,9 +125,83 @@ public class StandingsFragment extends Fragment {
             @Override
             public void onFailure(Call<StandingsApiResponse> call, Throwable t) {
                 showLoading(false);
-                showError("Terjadi kesalahan jaringan: " + t.getMessage());
+                showError("Error jaringan backend: " + t.getMessage());
             }
         });
+    }
+
+    private void loadStandingsExternal(int season) {
+        showLoading(true);
+        tvError.setVisibility(View.GONE);
+
+        Call<StandingsApiResponse> call = ApiClient.getService().getStandings(LIGA_1_ID, season);
+        call.enqueue(new Callback<StandingsApiResponse>() {
+            @Override
+            public void onResponse(Call<StandingsApiResponse> call, Response<StandingsApiResponse> response) {
+                showLoading(false);
+
+                if (!response.isSuccessful() || response.body() == null ||
+                        response.body().getResponse() == null || response.body().getResponse().isEmpty()) {
+                    showError("Gagal memuat standings (external).");
+                    adapter.setItems(null);
+                    return;
+                }
+
+                List<StandingRow> rows = mapStandings(response.body());
+                if (rows.isEmpty()) {
+                    showError("Data klasemen kosong.");
+                    adapter.setItems(null);
+                } else {
+                    adapter.setItems(rows);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<StandingsApiResponse> call, Throwable t) {
+                showLoading(false);
+                showError("Error jaringan external: " + t.getMessage());
+            }
+        });
+    }
+
+    // ✅ Mapper generik: backend maupun external sama-sama StandingsApiResponse
+    private List<StandingRow> mapStandings(StandingsApiResponse body) {
+        List<StandingRow> out = new ArrayList<>();
+        if (body == null || body.getResponse() == null || body.getResponse().isEmpty()) return out;
+
+        StandingsApiResponse.ResponseItem first = body.getResponse().get(0);
+        if (first == null || first.league == null || first.league.standings == null || first.league.standings.isEmpty())
+            return out;
+
+        List<StandingsApiResponse.Standing> standings = first.league.standings.get(0);
+        if (standings == null) return out;
+
+        for (StandingsApiResponse.Standing s : standings) {
+            if (s == null || s.team == null || s.all == null || s.all.goals == null) continue;
+
+            Team team = new Team(
+                    s.team.id,
+                    s.team.name,
+                    s.team.logo // ✅ backend sekarang sudah isi logo, external juga biasanya ada
+            );
+
+            StandingRow row = new StandingRow(
+                    s.rank,
+                    team,
+                    s.all.played,
+                    s.all.win,
+                    s.all.draw,
+                    s.all.lose,
+                    s.all.goals.goalsFor,
+                    s.all.goals.goalsAgainst,
+                    s.goalsDiff,
+                    s.points,
+                    s.form
+            );
+            out.add(row);
+        }
+
+        return out;
     }
 
     private void showLoading(boolean loading) {

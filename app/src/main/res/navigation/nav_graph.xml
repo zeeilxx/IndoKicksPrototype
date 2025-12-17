@@ -45,4 +45,11 @@
         android:label="Club Detail"
         tools:layout="@layout/fragment_club_detail" />
 
+    <fragment
+        android:id="@+id/nav_player_detail"
+        android:name="com.example.indokicksprototype.ui.PlayerDetailFragment"
+        android:label="Player Detail"
+        tools:layout="@layout/fragment_player_detail" />
+
+
 </navigation>
