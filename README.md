@@ -11,10 +11,10 @@ Members :
 To Run Backend Services (2024-2025 data)
 Run on Android Studio/Compiler Terminal
 
-cd liga1_api
-python -m venv .venv
-.venv\Scripts\activate
-python -m pip install --upgrade pip
-pip install -r requirements.txt
-pip install tzdata
-uvicorn app.main:app --host 0.0.0.0 --port 1118 --reload
+- cd liga1_api
+- python -m venv .venv
+- .venv\Scripts\activate
+- python -m pip install --upgrade pip
+- pip install -r requirements.txt
+- pip install tzdata
+- uvicorn app.main:app --host 0.0.0.0 --port 1118 --reload
