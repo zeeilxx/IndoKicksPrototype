@@ -7,3 +7,14 @@ Members :
 - Ridhan Fadhlil Wafi - 2210511118
 - Abdef Rasendriya Indrastata - 2210511120
 - Hasbul Ihza Firnanda - 2210511124
+
+To Run Backend Services (2024-2025 data)
+Run on Android Studio/Compiler Terminal
+
+cd liga1_api
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install --upgrade pip
+pip install -r requirements.txt
+pip install tzdata
+uvicorn app.main:app --host 0.0.0.0 --port 1118 --reload
