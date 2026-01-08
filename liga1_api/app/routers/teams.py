@@ -40,16 +40,11 @@ def parse_teams(html: str) -> List[Dict[str, Any]]:
         slug = re.sub(r"[^A-Z0-9]+", "_", name.upper()).strip("_")
 
         teams.append({
-            "team": {
-                "id": stable_id(slug),
-                "name": name,
-                "slug": slug,
-                "country": "Indonesia",
-                "founded": None,
-                "national": False,
-                "logo": None,
-            }
+            "id": stable_id(slug),
+            "name": name,
+            "slug": slug,
         })
+
     return teams
 
 @router.get("/teams")
@@ -64,11 +59,30 @@ async def teams_list(league: int = 274, season: int = Query(...)):
     if not resp["ok"]:
         return {"get": "teams", "results": 0, "response": []}
 
+    teams_raw = parse_teams(resp["text"])
+    response = []
+
+    for t in teams_raw:
+        club_url = f"/clubs/single/{comp}/{t['slug'].lower()}"
+        logo = await resolve_club_logo_url(club_url)
+
+        response.append({
+            "team": {
+                "id": t["id"],
+                "name": t["name"],
+                "slug": t["slug"],
+                "country": "Indonesia",
+                "founded": None,
+                "national": False,
+                "logo": logo,
+            }
+        })
+
     return {
         "get": "teams",
         "parameters": {"league": league, "season": season},
-        "results": len(parse_teams(resp["text"])),
-        "response": parse_teams(resp["text"]),
+        "results": len(response),
+        "response": response,
     }
 
 @router.get("/teams/{team_slug}")
@@ -88,11 +102,9 @@ async def team_detail(team_slug: str, league: int = 274, season: int = Query(...
     meta = detail["meta"]
     slug = team_slug.upper()
 
-    # ✅ Get club page URL from your team detail scraper source info
     src = detail.get("_source", {}) or {}
     club_page_url = src.get("final_url") or src.get("club_url")  # absolute URL expected
 
-    # ✅ Resolve logo from the club page (uses your safe filters + caching)
     logo_url = await resolve_club_logo_url(club_page_url or "")
 
     return {
